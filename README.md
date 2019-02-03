@@ -140,8 +140,7 @@ Twitch Webhooks callbacks and transfer them to corresponding clients.
 
 ### 4. Demo
 
-A video demo that demonstrates the entire process is available via the following link: 
-* https://youtu.be/bf1pH9t2vvE
+A video demo that demonstrates the entire process is available via the following link: https://youtu.be/bf1pH9t2vvE
 
 Demo server: http://206.189.173.10:5000
 
