@@ -1,7 +1,7 @@
 import requests
-from requests.compat import urljoin, urlencode
+from requests.compat import urlencode
 import settings
-
+from utils import join_urls
 
 class TwitchAPIError(Exception): ...
 
@@ -19,7 +19,7 @@ class SubscriptionClient:
     """
 
     BASE_URL = settings.API_BASE_URL
-    WEBHOOKS_HUB_ENDPOINT = urljoin('webhooks', 'hub')
+    WEBHOOKS_HUB_ENDPOINT = join_urls('webhooks', 'hub')
     LEASE_SECONDS = 1000
     CALLBACK_URL = settings.CALLBACK_URL
     REQUEST_TIMEOUT_SECONDS = 90
@@ -114,18 +114,19 @@ class SubscriptionClient:
         :return: Received response.
         :rtype: requests.Response
         """
-        url = urljoin(self.BASE_URL, self.WEBHOOKS_HUB_ENDPOINT)
+        url = join_urls(self.BASE_URL, self.WEBHOOKS_HUB_ENDPOINT)
         urlencoded_params = urlencode(params)
+        cb_url = join_urls(
+                self.CALLBACK_URL,
+                self._session_id
+            )
         return requests.request(method, url, data={
             'hub.mode': mode,
             'hub.topic': '{}?{}'.format(
                 topic_url,
                 urlencoded_params
             ),
-            'hub.callback': urljoin(
-                self.CALLBACK_URL,
-                self._session_id
-            ),
+            'hub.callback': cb_url,
             'hub.lease_seconds': self.LEASE_SECONDS
             # TODO: support hub.secret for production
             # "hub.secret":"s3cRe7",
@@ -165,7 +166,7 @@ class SubscriptionClient:
             params = ''
         else:
             params = '?' + urlencode(params)
-        url = urljoin(self.BASE_URL, endpoint, params)
+        url = join_urls(self.BASE_URL, endpoint, params)
         response = requests.request(method, url, headers=self._headers, timeout=self.REQUEST_TIMEOUT_SECONDS)
 
         # Raise corresponding error, if error code returned.
