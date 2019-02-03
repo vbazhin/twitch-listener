@@ -1,6 +1,7 @@
 import requests
 from requests.compat import urlencode
 import settings
+from utils import join_urls
 
 
 class AuthStaticClient:
@@ -12,6 +13,7 @@ class AuthStaticClient:
     CLIENT_SECRET = settings.CLIENT_SECRET
     RESPONSE_TYPE = 'code'
     SCOPE = 'user_read'
+    BASE_URL = 'https://id.twitch.tv/oauth2/'
 
     @classmethod
     def get_auth_code_url(cls):
@@ -26,7 +28,8 @@ class AuthStaticClient:
             response_type=cls.RESPONSE_TYPE,
             scope=cls.SCOPE
         )
-        return 'https://id.twitch.tv/oauth2/authorize?{}' \
+        url = join_urls(self.BASE)
+        return 'authorize?{}' \
                ''.format(urlencode(request_params))
 
     @classmethod

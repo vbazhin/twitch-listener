@@ -3,7 +3,9 @@ from requests.compat import urlencode
 import settings
 from utils import join_urls
 
-class TwitchAPIError(Exception): ...
+
+class TwitchAPIError(Exception):
+    ...
 
 
 class SubscriptionClient:
@@ -156,10 +158,10 @@ class SubscriptionClient:
         # Raise corresponding error, if error code returned.
         response.raise_for_status()
         try:
-            id = response.json()['data'][0]['id']
+            user_id = response.json()['data'][0]['id']
         except IndexError:
             raise TwitchAPIError('Failed to obtain user id.')
-        return id
+        return user_id
 
     def _base_request(self, endpoint, method='GET', params=None):
         if params is None:

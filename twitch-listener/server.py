@@ -17,13 +17,12 @@ from flask import (
 )
 from flask_socketio import SocketIO
 from flask_session import Session
-
 import settings
 from auth_client import AuthStaticClient
 from subscribe_client import SubscriptionClient
 
-app = Flask(__name__)
 
+app = Flask(__name__)
 # Use Flask-Session for storing session data secure.
 # Some key value store like redis, can be used in production. Use "filesystem" storage for the demo app.
 app.config['SECRET_KEY'] = uuid.uuid4()
@@ -127,6 +126,7 @@ def catch_callback(session_id):
     event_data = {'data': message}
     socketio.emit('event_updated', event_data, room=session_id)
     return Response(status=200)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port=5000)
