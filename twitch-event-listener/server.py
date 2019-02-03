@@ -4,6 +4,10 @@ The server is responsible for exposing the web pages,
 reading callbacks and dispatching subscripted events to clients.
 """
 
+# Applying monkey-patch to allow sockets connection.
+from gevent import monkey
+monkey.patch_all()
+
 from flask import (
     Flask, render_template,
     request, Response, redirect,
