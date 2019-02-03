@@ -3,23 +3,32 @@
 The server is responsible for exposing the web pages,
 reading callbacks and dispatching subscripted events to clients.
 """
-
 # Applying monkey-patch to allow sockets connection.
 from gevent import monkey
 monkey.patch_all()
 
+import uuid
+from requests.exceptions import HTTPError
 from flask import (
     Flask, render_template,
     request, Response, redirect,
     session, url_for
 )
 from flask_socketio import SocketIO
-from requests.exceptions import HTTPError
+from flask_session import Session
+
 import settings
 from auth_client import AuthStaticClient
 from subscribe_client import SubscriptionClient
 
 app = Flask(__name__)
+
+# Use Flask-Session for storing session data secure.
+# Some key value store like redis, can be used in production. Use "filesystem" storage for the demo app.
+app.config['SECRET_KEY'] = uuid.uuid4()
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+
 socketio = SocketIO(app)
 
 
@@ -70,6 +79,7 @@ def show_stream():
         streamer_name=streamer_name
     )
 
+
 @socketio.on('stream_connected')
 def stream_connected_event(msg):
     session_id = request.sid
@@ -84,6 +94,7 @@ def stream_connected_event(msg):
     )
     client.subscribe_to_all_events()
 
+
 @socketio.on('disconnect')
 def disconnect():
     """Handle "disconnect" event.
@@ -92,6 +103,7 @@ def disconnect():
     session_id = request.sid
     if session_id in client_sessions:
         client_sessions.remove(session_id)
+
 
 @app.route('/callback/<session_id>', methods=['POST', 'GET'])
 def catch_callbacks(session_id):
