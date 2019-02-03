@@ -1,6 +1,6 @@
 import requests
 from requests.compat import urlencode
-from .. import settings
+import settings
 
 
 class AuthStaticClient:
