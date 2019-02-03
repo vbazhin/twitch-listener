@@ -8,6 +8,7 @@ from gevent import monkey
 monkey.patch_all()
 
 import uuid
+import datetime as dt
 from requests.exceptions import HTTPError
 from flask import (
     Flask, render_template,
@@ -113,7 +114,9 @@ def catch_callbacks(session_id):
     # It must be base on username - e.g. add session IDs after login somehow
     if session_id not in client_sessions:
         return Response(status=404)
-    message = {'data': request.data}
+    current_time_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    data = '{}: {}'.format(current_time_str, request.data.decode())
+    message = {'data': data}
     socketio.emit('event_updated', message, room=session_id)
     return Response(status=200)
 
