@@ -40,6 +40,7 @@ client_sessions = set()
 
 @app.route('/', methods=['GET'])
 def show_landing():
+    """Show index/landing page."""
     return render_template(
         'landing.html',
         auth_url=AuthStaticClient.get_auth_code_url()
@@ -48,6 +49,7 @@ def show_landing():
 
 @app.route('/auth')
 def get_token():
+    """Handle "auth code" callback and request auth token."""
     if 'code' not in request.args:
         return Response('No authentication code received', status=400)
     code = request.args['code']
@@ -61,6 +63,7 @@ def get_token():
 
 @app.route('/enter_streamer', methods=['GET', 'POST'])
 def streamer_form():
+    """Handle "Choose streemer" form."""
     # TODO: add crfs_token.
     if request.method == 'POST':
         username = request.form.get('username')
@@ -73,6 +76,7 @@ def streamer_form():
 
 @app.route('/stream', methods=['GET'])
 def show_stream():
+    """Show the main stream page."""
     streamer_name = session['streamer_name']
     return render_template(
         'stream.html',
@@ -82,6 +86,11 @@ def show_stream():
 
 @socketio.on('stream_connected')
 def stream_connected_event():
+    """Initiate subscriptions.
+
+    Triggered after receiving a "connected"
+    socket message, from the "stream" page.
+    """
     session_id = request.sid
     client_sessions.add(session_id)
     if 'streamer_name' not in session:
@@ -110,6 +119,11 @@ def disconnect():
 
 @app.route('/callback/<session_id>', methods=['POST', 'GET'])
 def catch_callback(session_id):
+    """Handle callbacks from Twitch Webhooks Hub.
+
+    :param: session_id: Client connection (socket) session id.
+    :type: session_id: str.
+    """
     # It must be base on username - e.g. add session IDs after login somehow
     # 'hub.mode', 'denied'
     if 'hub.challenge' in request.args:
