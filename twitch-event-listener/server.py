@@ -14,8 +14,9 @@ from flask import (
     session, url_for
 )
 from flask_socketio import SocketIO
+import settings
 from auth_client import AuthStaticClient
-
+from subscribe_client import SubscriptionClient
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -59,6 +60,18 @@ def show_stream():
         streamer_name=streamer_name
     )
 
+@socketio.on('stream_connected')
+def stream_connected_event(msg):
+    session_id = request.sid
+    streamer_name = session['streamer_name']
+    access_token = session['access_token']
+    client = SubscriptionClient(
+        streamer_name=streamer_name,
+        client_id=settings.CLIENT_ID,
+        access_token=access_token,
+        session_id=session_id
+    )
+    client.subscribe_to_all_events()
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port=5000)
