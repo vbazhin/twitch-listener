@@ -40,9 +40,12 @@ def show_landing():
 @app.route('/auth')
 def get_token():
     if 'code' not in request.args:
-        return Response(status=400)
+        return Response('No authentication code received', status=400)
     code = request.args['code']
-    access_token = AuthStaticClient.get_access_token(code)
+    try:
+        access_token = AuthStaticClient.get_access_token(code)
+    except HTTPError:
+        return Response('Failed to obtain access token', status=400)
     session['access_token'] = access_token
     return redirect(url_for('streamer_form'))
 
