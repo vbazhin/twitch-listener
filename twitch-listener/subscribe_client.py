@@ -33,10 +33,10 @@ class SubscriptionClient:
     def __init__(self, streamer_name, client_id, access_token, session_id):
         """SubscriptionClient constructor.
 
-        :param streamer_name: Favorite streamer's name
-        :param client_id: Twitch App client id
-        :param access_token: Authentication token
-        :param session_id: unique socket session id
+        :param streamer_name: Favorite streamer's name.
+        :param client_id: Twitch App client id.
+        :param access_token: Access token.
+        :param session_id: unique socket session id.
         :type streamer_name: str
         :type client_id: str
         :type: access_token: str
