@@ -22,6 +22,12 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 
+# Store current client sessions ids, to verify session,
+# before sending streamer's event callbacks.
+# In production Redis storage (or some other k/v store) can be used.
+client_sessions = set()
+
+
 @app.route('/', methods=['GET'])
 def show_landing():
     return render_template(
@@ -63,6 +69,7 @@ def show_stream():
 @socketio.on('stream_connected')
 def stream_connected_event(msg):
     session_id = request.sid
+    client_sessions.add(session_id)
     streamer_name = session['streamer_name']
     access_token = session['access_token']
     client = SubscriptionClient(
