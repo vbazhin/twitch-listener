@@ -80,6 +80,15 @@ def stream_connected_event(msg):
     )
     client.subscribe_to_all_events()
 
+@socketio.on('disconnect')
+def disconnect():
+    """Handle "disconnect" event.
+
+    The signal is default and dispatched by client automatically."""
+    session_id = request.sid
+    if session_id in client_sessions:
+        client_sessions.remove(session_id)
+
+
 if __name__ == '__main__':
     socketio.run(app, debug=True, port=5000)
-
