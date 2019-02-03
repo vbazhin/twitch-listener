@@ -6,7 +6,7 @@ from . import settings
 class AuthStaticClient:
     """Authentication client class.
 
-    Exposes Auth code url, and requests the assess token."""
+    Exposes Auth code url and requests the assess token as static functions."""
     REDIRECT_URI = settings.AUTH_REDIRECT_URI
     CLIENT_ID = settings.CLIENT_ID
     CLIENT_SECRET = settings.CLIENT_SECRET
