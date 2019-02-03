@@ -14,6 +14,7 @@ from flask import (
     session, url_for
 )
 from flask_socketio import SocketIO
+from requests.exceptions import HTTPError
 import settings
 from auth_client import AuthStaticClient
 from subscribe_client import SubscriptionClient
@@ -88,6 +89,15 @@ def disconnect():
     session_id = request.sid
     if session_id in client_sessions:
         client_sessions.remove(session_id)
+
+@app.route('/callback/<session_id>', methods=['POST', 'GET'])
+def catch_callbacks(session_id):
+    # It must be base on username - e.g. add session IDs after login somehow
+    if session_id not in client_sessions:
+        return Response(status=404)
+    message = {'data': request.data}
+    socketio.emit('event_updated', message, room=session_id)
+    return Response(status=200)
 
 
 if __name__ == '__main__':
