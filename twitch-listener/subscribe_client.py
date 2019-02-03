@@ -50,26 +50,26 @@ class SubscriptionClient:
 
     def subscribe_following(self):
         """Subscribes the "Streamer starts following someone" event."""
-        topic_url = 'https://api.twitch.tv/helix/users/follows'
+        topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(to_id=self.screamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_followed_by(self):
         """Subscribes the "Streamer is followed by someone" event."""
-        topic_url = 'https://api.twitch.tv/helix/users/follows'
+        topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(from_id=self.screamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_stream_changed(self):
         """Subscribe stream changes events."""
-        topic_url = 'https://api.twitch.tv/helix/streams'
+        topic_url = join_urls(self.BASE_URL, 'streams')
         params = dict(user_id=self.screamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_user_changed(self):
         """Subscribe "user changed" event.
         TODO: This will not work, when callback server uses unsecure connection."""
-        topic_url = 'https://api.twitch.tv/helix/users'
+        topic_url = join_urls(self.BASE_URL, 'users')
         params = dict(id=self.screamer_id)
         return self._subscribe(topic_url, params)
 
