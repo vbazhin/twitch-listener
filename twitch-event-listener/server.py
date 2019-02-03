@@ -9,10 +9,12 @@ from flask import (
     request, Response, redirect,
     session, url_for
 )
+from flask_socketio import SocketIO
 from auth_client import AuthStaticClient
 
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 @app.route('/', methods=['GET'])
@@ -55,5 +57,5 @@ def show_stream():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True, port=5000)
 
