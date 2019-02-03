@@ -110,16 +110,26 @@ def disconnect():
 
 
 @app.route('/callback/<session_id>', methods=['POST', 'GET'])
-def catch_callbacks(session_id):
+def catch_callback(session_id):
     # It must be base on username - e.g. add session IDs after login somehow
+    # 'hub.mode', 'denied'
+    if 'hub.challenge' in request.args:
+        return Response(request.args['hub.challenge'], status=200)
     if session_id not in client_sessions:
         return Response(status=404)
-    current_time_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    data = '{}: {}'.format(current_time_str, request.data.decode())
-    message = {'data': data}
-    socketio.emit('event_updated', message, room=session_id)
-    return Response(status=200)
-
+    if 'hub.mode' in request.args:
+        current_time_str = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        if request.args['hub.mode'] == 'denied':
+            message = 'Failed to sibscibe to topic: {}. Reason: {}'.format(
+                request.args['hub.topic'], request.args['hub.reason'])
+        else:
+            message = request.data.decode()
+        data = '{}: {}'.format(current_time_str, message)
+        message = {'data': data}
+        socketio.emit('event_updated', message, room=session_id)
+        return Response(status=200)
+    return Response(status=500)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port=5000)
+x
