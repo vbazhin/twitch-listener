@@ -81,9 +81,12 @@ def show_stream():
 
 
 @socketio.on('stream_connected')
-def stream_connected_event(msg):
+def stream_connected_event():
     session_id = request.sid
     client_sessions.add(session_id)
+    if 'streamer_name' not in session:
+        # TODO: handle the case more compehensive.
+        return
     streamer_name = session['streamer_name']
     access_token = session['access_token']
     client = SubscriptionClient(
