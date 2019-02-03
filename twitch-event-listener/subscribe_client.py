@@ -18,7 +18,7 @@ class SubscriptionClient:
             that requires TSL certs configure. To investigate).
     """
 
-    BASE_URL = settings.BASE_URL
+    BASE_URL = settings.API_BASE_URL
     WEBHOOKS_HUB_ENDPOINT = urljoin('webhooks', 'hub')
     LEASE_SECONDS = 1000
     CALLBACK_URL = settings.CALLBACK_URL
