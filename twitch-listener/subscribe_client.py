@@ -31,6 +31,17 @@ class SubscriptionClient:
         UNSUBSCRIBE = 'unsubscribe'
 
     def __init__(self, streamer_name, client_id, access_token, session_id):
+        """SubscriptionClient constructor.
+
+        :param streamer_name: Favorite streamer's name
+        :param client_id: Twitch App client id
+        :param access_token: Authentication token
+        :param session_id: unique socket session id
+        :type streamer_name: str
+        :type client_id: str
+        :type: access_token: str
+        :type: session_id: str
+        """
         self._client_id = client_id
         self._access_token = access_token
         self._session_id = session_id
@@ -51,13 +62,13 @@ class SubscriptionClient:
         ...
 
     def subscribe_following(self):
-        """Subscribes the "Streamer starts following someone" event."""
+        """Subscribe the "Streamer starts following someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(to_id=self.screamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_followed_by(self):
-        """Subscribes the "Streamer is followed by someone" event."""
+        """Subscribe the "Streamer is followed by someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(from_id=self.screamer_id)
         return self._subscribe(topic_url, params)
