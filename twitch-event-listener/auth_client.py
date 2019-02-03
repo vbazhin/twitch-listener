@@ -52,6 +52,7 @@ class AuthStaticClient:
         """
         token_url = cls._get_token_url(auth_code)
         response = requests.post(token_url)
+        response.raise_for_status()
         if 'access_token' not in response.json():
             raise ValueError('"access_token" param '
                              'not found in the response')
