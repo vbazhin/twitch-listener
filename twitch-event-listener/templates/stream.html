@@ -27,10 +27,18 @@
             var messages = document.getElementsByTagName('ul')[0],
                 message = document.createElement('li'),
                 content = document.createTextNode(event.data);
+            if (messages.childElementCount > 9) {
+                // Remove first item, if number of displayed items is 10.
+                messages.removeChild(messages.childNodes[0])
+            }
             message.appendChild(content);
             messages.appendChild(message);
-        });
+            });
 
         </script>
     </body>
+    <div>
+        <h3>{{ streamer_name }} latest events:</h3>
+        <ul></ul>
+    </div>
 </html>
