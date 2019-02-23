@@ -1,50 +1,48 @@
 import requests
 from requests.compat import urlencode
-import settings
 from utils import join_urls
 
 
-class AuthStaticClient:
+class TwitchAuthClient:
     """Authentication client class.
 
     Exposes Auth code url and requests the assess token as static functions."""
-    REDIRECT_URI = settings.AUTH_REDIRECT_URI
-    CLIENT_ID = settings.CLIENT_ID
-    CLIENT_SECRET = settings.CLIENT_SECRET
     RESPONSE_TYPE = 'code'
     SCOPE = 'user_read'
     BASE_URL = 'https://id.twitch.tv/oauth2/'
 
-    @classmethod
-    def get_auth_code_url(cls):
+    def __init__(self, client_id, client_secret, redirect_uri):
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._redirect_uri = redirect_uri
+
+    def get_auth_code_url(self):
         """Obtain authentication code URL address.
 
         :return: Auth code URL.
         :rtype: str
         """
         request_params = dict(
-            client_id=cls.CLIENT_ID,
-            redirect_uri=cls.REDIRECT_URI,
-            response_type=cls.RESPONSE_TYPE,
-            scope=cls.SCOPE
+            client_id=self._client_id,
+            redirect_uri=self._redirect_uri,
+            response_type=self.RESPONSE_TYPE,
+            scope=self.SCOPE
         )
-        url = join_urls(cls.BASE_URL, 'authorize')
+        url = join_urls(self.BASE_URL, 'authorize')
         return '{}?{}'.format(url, urlencode(request_params))
 
-    @classmethod
-    def _get_token_url(cls, auth_code):
+    def _get_token_url(self, auth_code):
         request_params = dict(
-            client_id=cls.CLIENT_ID,
-            client_secret=cls.CLIENT_SECRET,
+            client_id=self._client_id,
+            client_secret=self._client_secret,
+            redirect_uri=self._redirect_uri,
+            grant_type='authorization_code',
             code=auth_code,
-            redirect_uri=cls.REDIRECT_URI,
-            grant_type='authorization_code'
         )
-        url = join_urls(cls.BASE_URL, 'token')
+        url = join_urls(self.BASE_URL, 'token')
         return '{}?{}'.format(url, urlencode(request_params))
 
-    @classmethod
-    def get_access_token(cls, auth_code):
+    def get_access_token(self, auth_code):
         """Obtain access_token token using provided auth code.
 
         :param auth_code: Authentication code.
@@ -52,7 +50,7 @@ class AuthStaticClient:
         :return: Access token.
         :rtype: str.
         """
-        token_url = cls._get_token_url(auth_code)
+        token_url = self._get_token_url(auth_code)
         response = requests.post(token_url)
         response.raise_for_status()
         if 'access_token' not in response.json():

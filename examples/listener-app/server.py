@@ -18,7 +18,7 @@ from flask import (
 from flask_socketio import SocketIO
 from flask_session import Session
 import settings
-from auth_client import AuthStaticClient
+from auth_client import TwitchAuthClient
 from subscribe_client import SubscriptionClient
 
 
@@ -38,12 +38,19 @@ socketio = SocketIO(app)
 client_sessions = set()
 
 
+auth_client = TwitchAuthClient(
+    settings.CLIENT_ID,
+    settings.CLIENT_SECRET,
+    settings.REDIRECT_URI
+)
+
+
 @app.route('/', methods=['GET'])
 def show_landing():
     """Show index/landing page."""
     return render_template(
         'landing.html',
-        auth_url=AuthStaticClient.get_auth_code_url()
+        auth_url=auth_client.get_auth_code_url()
     )
 
 
@@ -54,7 +61,7 @@ def get_token():
         return Response('No authentication code received', status=400)
     code = request.args['code']
     try:
-        access_token = AuthStaticClient.get_access_token(code)
+        access_token = auth_client.get_access_token(code)
     except HTTPError:
         return Response('Failed to obtain access token', status=400)
     session['access_token'] = access_token
