@@ -1,43 +1,39 @@
-## 1. Implementation
+## 1. Assets
+#### 1.1 Authentication client
 
-### 1.1. Technology stack
-The project is implemented on Python3.6 using Flask and Flask-SocketIO.
-Flask-SocketIO is responsible for bearding the websocket connection with the clients.
-The socket transport is supplied by gevent.
-
-### 1.2. Components.
-
-The implementation itself consists of 3 main components:
-* Authentication client;
-* Subscription client;
-* Web-server, which handles the user routes and Twitch Webhooks Hub callbacks.
-
-
-#### 1.2.1. Authentication client
-
-The client is represented by AuthStaticClient class, which is responsible for exposing 
+The client is represented by TwitchAuthClient class, which is responsible for exposing 
 the authentication code url and obtaining the access token. 
 In fact, the class is just a namespace for aggregating the methods,
 as the both public methods of the class are static, 
 which allows to prevent populating multiple instancess of the class.
 
+Initialization:
+```python
+from twitch_listener import TwitchAuthClient
+auth_client = TwitchAuthClient(
+    <client_id>,
+    <client_secret>,
+    <redirect_uri>
+)
+```
+
 Get auth code:
 ```python
-AuthStaticClient.get_auth_code_url()
+auth_client.get_auth_code_url()
 ```
 Returns str. URL string for requesting an auth code from Twitch.
 
 Get access token:
 ```python
-AuthStaticClient.get_auth_token()
+auth_client.get_auth_token()
 ```
 Requests Twitch Authentication API to obtain the access token using an auth code.
 Returns: str. Access token.
 
 
-#### 1.2.2. Subscription client
-
-SubscriptionClient class provides the methods for subscribing Twitch API Webhooks.
+#### 1.2. Subscription client
+ 
+TwitchSubscribeClient class provides the methods for subscribing Twitch API Webhooks.
 The client uses the new [Twitch Helix API](http://google.com) for all requests, 
 including obtaining logged user's id.
 
@@ -48,6 +44,20 @@ client_id: Twitch App client id
 access_token: Obtained access token
 session_id: unique socket session id
 ```
+
+Initialization:
+
+```python
+from twitch_listener import TwitchSubscribeClient
+client = TwitchSubscribeClient(
+    streamer_name=<streamer_name>,
+    client_id=<client_id>,
+    access_token=<access_token>,
+    session_id=<session_id>,
+    callback_url=<callback_url>
+)
+```
+
 The public interface:
 ```python
 client.subscribe_to_all_events() # Subscribe all available events.
@@ -66,7 +76,7 @@ thebhooks Endpoint, subscription duration, request timeout and other properties 
 The default subscription time: 1000 seconds.
 
 
-#### 1.2.3. Web-server
+## 2. Demo app - web-server (examples/listener-app)
 
 The server is responsible for exposing the web pages to users,
 reading callbacks and dispatching subscripted events to clients.
@@ -94,7 +104,7 @@ Emit socket event: "event_updated" - sent by Twitch Webhookscallback function ha
 
 
 
-## 2. Default workflow
+#### Default workflow
 
 
 1. Expose the landing page with the authentication link at "/". The auth link url generated with AuthStaticClient.
