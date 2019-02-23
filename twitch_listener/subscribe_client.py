@@ -7,7 +7,7 @@ class TwitchAPIError(Exception):
     ...
 
 
-class SubscriptionClient:
+class TwitchSubscribeClient:
     """Streamer event subscriptions manager.
 
     Allows to subscribe to streamer's updates.
