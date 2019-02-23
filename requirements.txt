@@ -1,4 +1,6 @@
 requests==2.21.0
+
+# Requirements for the demo app.
 flask==1.0.2
 flask-socketio==3.2.1
 flask-session==0.3.1
