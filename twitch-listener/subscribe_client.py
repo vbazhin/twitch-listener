@@ -1,6 +1,5 @@
 import requests
 from requests.compat import urlencode
-import settings
 from utils import join_urls
 
 
@@ -20,17 +19,17 @@ class SubscriptionClient:
             that requires TSL certs configure. To investigate).
     """
 
-    BASE_URL = settings.API_BASE_URL
+    BASE_URL = 'https://api.twitch.tv/helix/'
     WEBHOOKS_HUB_ENDPOINT = join_urls('webhooks', 'hub')
     LEASE_SECONDS = 1000
-    CALLBACK_URL = settings.CALLBACK_URL
     REQUEST_TIMEOUT_SECONDS = 90
 
     class RequestMode:
         SUBSCRIBE = 'subscribe'
         UNSUBSCRIBE = 'unsubscribe'
 
-    def __init__(self, streamer_name, client_id, access_token, session_id):
+    def __init__(self, streamer_name, client_id, access_token,
+                 session_id, callback_url):
         """SubscriptionClient constructor.
 
         :param streamer_name: Favorite streamer's name.
@@ -45,6 +44,7 @@ class SubscriptionClient:
         self._client_id = client_id
         self._access_token = access_token
         self._session_id = session_id
+        self._callback_url = callback_url
         self.screamer_id = self._get_user_id(streamer_name)
 
     def subscribe_to_all_events(self):
@@ -130,7 +130,7 @@ class SubscriptionClient:
         url = join_urls(self.BASE_URL, self.WEBHOOKS_HUB_ENDPOINT)
         urlencoded_params = urlencode(params)
         cb_url = join_urls(
-                self.CALLBACK_URL,
+                self._callback_url,
                 self._session_id
             )
         return requests.request(method, url, data={
@@ -180,8 +180,8 @@ class SubscriptionClient:
         else:
             params = '?' + urlencode(params)
         url = join_urls(self.BASE_URL, endpoint, params)
-        response = requests.request(method, url, headers=self._headers, timeout=self.REQUEST_TIMEOUT_SECONDS)
-
+        response = requests.request(method, url, headers=self._headers,
+                                    timeout=self.REQUEST_TIMEOUT_SECONDS)
         # Raise corresponding error, if error code returned.
         response.raise_for_status()
         return response

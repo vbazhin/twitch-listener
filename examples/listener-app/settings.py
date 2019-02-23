@@ -1,7 +1,5 @@
 DEBUG = True
 
-API_BASE_URL = 'https://api.twitch.tv/helix/'
-
 AUTH_REDIRECT_URI = 'http://127.0.0.1:5000/auth'
 
 CLIENT_ID = '2jt6ffc952fygz33gvyq3qmbucwxe2'

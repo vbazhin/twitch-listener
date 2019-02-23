@@ -109,7 +109,8 @@ def stream_connected_event():
         streamer_name=streamer_name,
         client_id=settings.CLIENT_ID,
         access_token=access_token,
-        session_id=session_id
+        session_id=session_id,
+        callback_url=settings.CALLBACK_URL
     )
     client.subscribe_to_all_events()
 
