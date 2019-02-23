@@ -28,9 +28,8 @@ class AuthStaticClient:
             response_type=cls.RESPONSE_TYPE,
             scope=cls.SCOPE
         )
-        url = join_urls(self.BASE)
-        return 'authorize?{}' \
-               ''.format(urlencode(request_params))
+        url = join_urls(cls.BASE_URL, 'authorize')
+        return '{}?{}'.format(url, urlencode(request_params))
 
     @classmethod
     def _get_token_url(cls, auth_code):
@@ -41,8 +40,8 @@ class AuthStaticClient:
             redirect_uri=cls.REDIRECT_URI,
             grant_type='authorization_code'
         )
-        return 'https://id.twitch.tv/oauth2/token?{}' \
-               ''.format(urlencode(request_params))
+        url = join_urls(cls.BASE_URL, 'token')
+        return '{}?{}'.format(url, urlencode(request_params))
 
     @classmethod
     def get_access_token(cls, auth_code):
