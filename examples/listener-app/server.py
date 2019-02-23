@@ -18,8 +18,8 @@ from flask import (
 from flask_socketio import SocketIO
 from flask_session import Session
 import settings
-from auth_client import TwitchAuthClient
-from subscribe_client import SubscriptionClient
+from twitch_listener import TwitchAuthClient
+from twitch_listener import TwitchSubscribeClient
 
 
 app = Flask(__name__)
@@ -105,7 +105,7 @@ def stream_connected_event():
         return
     streamer_name = session['streamer_name']
     access_token = session['access_token']
-    client = SubscriptionClient(
+    client = TwitchSubscribeClient(
         streamer_name=streamer_name,
         client_id=settings.CLIENT_ID,
         access_token=access_token,
