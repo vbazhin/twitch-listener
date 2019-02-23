@@ -1,10 +1,7 @@
 import requests
 from requests.compat import urlencode
+from errors import TwitchAPIError
 from utils import join_urls
-
-
-class TwitchAPIError(Exception):
-    ...
 
 
 class TwitchSubscribeClient:
