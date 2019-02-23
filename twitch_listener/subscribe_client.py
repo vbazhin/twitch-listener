@@ -42,7 +42,7 @@ class TwitchSubscribeClient:
         self._access_token = access_token
         self._session_id = session_id
         self._callback_url = callback_url
-        self.screamer_id = self._get_user_id(streamer_name)
+        self.streamer_id = self._get_user_id(streamer_name)
 
     def subscribe_to_all_events(self):
         """Subscribe to all available events."""
@@ -61,26 +61,26 @@ class TwitchSubscribeClient:
     def subscribe_following(self):
         """Subscribe the "Streamer starts following someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
-        params = dict(to_id=self.screamer_id)
+        params = dict(to_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_followed_by(self):
         """Subscribe the "Streamer is followed by someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
-        params = dict(from_id=self.screamer_id)
+        params = dict(from_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_stream_changed(self):
         """Subscribe stream changes events."""
         topic_url = join_urls(self.BASE_URL, 'streams')
-        params = dict(user_id=self.screamer_id)
+        params = dict(user_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
     def subscribe_user_changed(self):
         """Subscribe "user changed" event.
         TODO: This will not work, when callback server uses unsecure connection."""
         topic_url = join_urls(self.BASE_URL, 'users')
-        params = dict(id=self.screamer_id)
+        params = dict(id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
     def _subscribe(self, topic_url, params):
