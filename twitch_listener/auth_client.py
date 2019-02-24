@@ -10,6 +10,8 @@ class TwitchAuthClient:
     RESPONSE_TYPE = 'code'
     SCOPE = 'user_read'
     BASE_URL = 'https://id.twitch.tv/oauth2/'
+    AUTH_CODE_ENDPOINT = 'authorize'
+    ACCESS_TOKEN_ENDPOINT = 'token'
 
     def __init__(self, client_id, client_secret, redirect_uri):
         self._client_id = client_id
@@ -28,8 +30,8 @@ class TwitchAuthClient:
             response_type=self.RESPONSE_TYPE,
             scope=self.SCOPE
         )
-        url = join_urls(self.BASE_URL, 'authorize')
-        return '{}?{}'.format(url, urlencode(request_params))
+        url = join_urls(self.BASE_URL, self.AUTH_CODE_ENDPOINT)
+        return f'{url}?{urlencode(request_params)}'
 
     def _get_token_url(self, auth_code):
         request_params = dict(
@@ -39,8 +41,8 @@ class TwitchAuthClient:
             grant_type='authorization_code',
             code=auth_code,
         )
-        url = join_urls(self.BASE_URL, 'token')
-        return '{}?{}'.format(url, urlencode(request_params))
+        url = join_urls(self.BASE_URL, self.ACCESS_TOKEN_ENDPOINT)
+        return f'{url}?{urlencode(request_params)}'
 
     def get_access_token(self, auth_code):
         """Obtain access_token token using provided auth code.
