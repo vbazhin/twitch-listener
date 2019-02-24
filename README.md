@@ -1,3 +1,5 @@
+## Note: the package is under development.
+
 ## 1. Assets
 #### 1.1 Authentication client
 
