@@ -13,16 +13,16 @@ class TwitchAuthClient:
     AUTH_CODE_ENDPOINT = 'authorize'
     ACCESS_TOKEN_ENDPOINT = 'token'
 
-    def __init__(self, client_id, client_secret, redirect_uri):
+    def __init__(self, client_id: str, client_secret: str,
+                 redirect_uri:str):
         self._client_id = client_id
         self._client_secret = client_secret
         self._redirect_uri = redirect_uri
 
-    def get_auth_code_url(self):
+    def get_auth_code_url(self) -> str:
         """Obtain authentication code URL address.
 
         :return: Auth code URL.
-        :rtype: str
         """
         request_params = dict(
             client_id=self._client_id,
@@ -33,7 +33,7 @@ class TwitchAuthClient:
         url = join_urls(self.BASE_URL, self.AUTH_CODE_ENDPOINT)
         return f'{url}?{urlencode(request_params)}'
 
-    def _get_token_url(self, auth_code):
+    def _get_token_url(self, auth_code: str) -> str:
         request_params = dict(
             client_id=self._client_id,
             client_secret=self._client_secret,
@@ -44,13 +44,11 @@ class TwitchAuthClient:
         url = join_urls(self.BASE_URL, self.ACCESS_TOKEN_ENDPOINT)
         return f'{url}?{urlencode(request_params)}'
 
-    def get_access_token(self, auth_code):
+    def get_access_token(self, auth_code: str) -> str:
         """Obtain access_token token using provided auth code.
 
         :param auth_code: Authentication code.
-        :type auth_code: str.
         :return: Access token.
-        :rtype: str.
         """
         token_url = self._get_token_url(auth_code)
         response = requests.post(token_url)
