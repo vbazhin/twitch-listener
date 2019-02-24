@@ -25,18 +25,14 @@ class TwitchSubscribeClient:
         SUBSCRIBE = 'subscribe'
         UNSUBSCRIBE = 'unsubscribe'
 
-    def __init__(self, streamer_name, client_id, access_token,
-                 session_id, callback_url):
+    def __init__(self, streamer_name: str, client_id: str,
+                 access_token: str, session_id: str, callback_url: str):
         """SubscriptionClient constructor.
 
         :param streamer_name: Favorite streamer's name.
         :param client_id: Twitch App client id.
         :param access_token: Access token.
         :param session_id: unique socket session id.
-        :type streamer_name: str
-        :type client_id: str
-        :type: access_token: str
-        :type: session_id: str
         """
         self._client_id = client_id
         self._access_token = access_token
@@ -44,7 +40,7 @@ class TwitchSubscribeClient:
         self._callback_url = callback_url
         self.streamer_id = self._get_user_id(streamer_name)
 
-    def subscribe_to_all_events(self):
+    def subscribe_to_all_events(self) -> None:
         """Subscribe to all available events."""
         # TODO: make asyncrohous via async/await.
         self.subscribe_following()
@@ -53,76 +49,74 @@ class TwitchSubscribeClient:
         # User changes subscrbtiotion requires TSL/SSL certs installed (https).
         # self.subscribe_user_changed()
 
-    def unsubscribe_from_all_events(self):
+    def unsubscribe_from_all_events(self) -> None:
         """Revoke subscription from all events."""
         # TODO: Implement events unsubscription for production.
         ...
 
-    def subscribe_following(self):
+    def subscribe_following(self) -> requests.Response:
         """Subscribe the "Streamer starts following someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(to_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
-    def subscribe_followed_by(self):
+    def subscribe_followed_by(self) -> requests.Response:
         """Subscribe the "Streamer is followed by someone" event."""
         topic_url = join_urls(self.BASE_URL, 'users/follows')
         params = dict(from_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
-    def subscribe_stream_changed(self):
+    def subscribe_stream_changed(self) -> requests.Response:
         """Subscribe stream changes events."""
         topic_url = join_urls(self.BASE_URL, 'streams')
         params = dict(user_id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
-    def subscribe_user_changed(self):
+    def subscribe_user_changed(self) -> requests.Response:
         """Subscribe "user changed" event.
         TODO: This will not work, when callback server uses unsecure connection."""
         topic_url = join_urls(self.BASE_URL, 'users')
         params = dict(id=self.streamer_id)
         return self._subscribe(topic_url, params)
 
-    def _subscribe(self, topic_url, params):
+    def _subscribe(self, topic_url: str, params: dict) -> requests.Response:
         """Subscribe certain topic with the given params.
 
         :param: topic_url. Twitch topic url.
         :param: params. Subscription params.
-        :type: topic_url: str.
-        :type: params: dict.
 
         :return: Obtained response:
-        :rtype: requests.Request.response
         """
-        return self._webhooks_hub_request(topic_url, self.RequestMode.SUBSCRIBE, params=params)
+        return self._webhooks_hub_request(
+            topic_url,
+            self.RequestMode.SUBSCRIBE,
+            params=params
+        )
 
-    def _unsubscribe(self, topic_url, params):
+    def _unsubscribe(self, topic_url: str, params: dict) -> requests.Response:
         """Unsubscribe topic.
 
         :param: topic_url. Subscribing topic url.
         :param: params. Subscription params.
-        :type: topic_url: str.
-        :type: params: dict.
 
         :return: Received response.
-        :rtype: requests.Response
         """
-        return self._webhooks_hub_request(topic_url, self.RequestMode.UNSUBSCRIBE, params=params)
+        return self._webhooks_hub_request(
+            topic_url,
+            self.RequestMode.UNSUBSCRIBE,
+            params=params
+        )
 
-    def _webhooks_hub_request(self, topic_url, mode, params=None, method='POST'):
+    def _webhooks_hub_request(self, topic_url: str, mode: str,
+                              params: dict=None, method: str='POST') -> requests.Response:
         """Send request to Twitch Webhooks Hub.
 
         :param: topic_url: Subscribing topic url.
         :param mode: Suscription mode.
         :param params: Subscription params.
         :param method: Request method.
-        :type topic_url: str.
-        :type mode: str.
-        :type params: dict.
-        :type method: str.
 
         :return: Received response.
-        :rtype: requests.Response
         """
         url = join_urls(self.BASE_URL, self.WEBHOOKS_HUB_ENDPOINT)
         urlencoded_params = urlencode(params)
@@ -140,24 +134,22 @@ class TwitchSubscribeClient:
         }, headers=self._headers)
 
     @property
-    def _bearer_token(self):
+    def _bearer_token(self) -> str:
         return f'Bearer {self._access_token}'
 
     @property
-    def _headers(self):
+    def _headers(self) -> dict:
         return {
             'Authorization': self._bearer_token,
             'Client-ID': self._client_id
         }
 
-    def _get_user_id(self, username):
+    def _get_user_id(self, username: str) -> requests.Response:
         """Get streamer's ID by username.
 
         :param: username.
-        :type: str.
 
         :return: Obtained streamer's ID.
-        :rtype: str.
         """
         response = self._base_request(f'users/?login={username}')
         # Raise corresponding error, if error code returned.
@@ -168,7 +160,7 @@ class TwitchSubscribeClient:
             raise TwitchAPIError('Failed to obtain user id.')
         return user_id
 
-    def _base_request(self, endpoint, method='GET', params=None):
+    def _base_request(self, endpoint: str, method: str='GET', params: dict=None):
         if params is None:
             params = ''
         else:

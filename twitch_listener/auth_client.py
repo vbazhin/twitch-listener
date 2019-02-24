@@ -6,15 +6,14 @@ from utils import join_urls
 class TwitchAuthClient:
     """Authentication client class.
 
-    Exposes Auth code url and requests the assess token as static functions."""
+    Responsible for obtaining the auth code and the access token."""
     RESPONSE_TYPE = 'code'
     SCOPE = 'user_read'
     BASE_URL = 'https://id.twitch.tv/oauth2/'
     AUTH_CODE_ENDPOINT = 'authorize'
     ACCESS_TOKEN_ENDPOINT = 'token'
 
-    def __init__(self, client_id: str, client_secret: str,
-                 redirect_uri:str):
+    def __init__(self, client_id: str, client_secret: str, redirect_uri: str):
         self._client_id = client_id
         self._client_secret = client_secret
         self._redirect_uri = redirect_uri
