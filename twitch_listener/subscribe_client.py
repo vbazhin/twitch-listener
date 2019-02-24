@@ -132,10 +132,7 @@ class TwitchSubscribeClient:
             )
         return requests.request(method, url, data={
             'hub.mode': mode,
-            'hub.topic': '{}?{}'.format(
-                topic_url,
-                urlencoded_params
-            ),
+            'hub.topic': f'{topic_url}?{urlencoded_params}',
             'hub.callback': cb_url,
             'hub.lease_seconds': self.LEASE_SECONDS
             # TODO: support hub.secret for production
@@ -144,7 +141,7 @@ class TwitchSubscribeClient:
 
     @property
     def _bearer_token(self):
-        return 'Bearer {token}'.format(token=self._access_token)
+        return f'Bearer {self._access_token}'
 
     @property
     def _headers(self):
@@ -162,7 +159,7 @@ class TwitchSubscribeClient:
         :return: Obtained streamer's ID.
         :rtype: str.
         """
-        response = self._base_request('users/?login={}'.format(username))
+        response = self._base_request(f'users/?login={username}')
         # Raise corresponding error, if error code returned.
         response.raise_for_status()
         try:
